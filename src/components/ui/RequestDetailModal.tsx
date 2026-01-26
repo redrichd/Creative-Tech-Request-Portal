@@ -61,12 +61,11 @@ export function RequestDetailModal({ request, isOpen, onClose, isAdmin }: Reques
         }
     }, [request, isOpen]);
 
+    const { user } = useAuth();
     if (!isOpen || !request) return null;
 
-    const { user } = useAuth(); // Import useAuth to get current admin info
-
     // Strict segregation requested: "When role is supervisor...".
-    const currentUser = user as unknown as UserProfile;
+    const currentUser = (user as unknown) as UserProfile;
     const canSeeAdminActions = currentUser?.role === 'admin' || currentUser?.role === 'super_admin';
     const canSeeSupervisorActions = currentUser?.role === 'supervisor' || currentUser?.role === 'super_admin';
 
@@ -204,7 +203,7 @@ export function RequestDetailModal({ request, isOpen, onClose, isAdmin }: Reques
                             {isEditing ? (
                                 <select
                                     value={editData.category || 'other'}
-                                    onChange={(e) => setEditData(prev => ({ ...prev, category: e.target.value as any }))}
+                                    onChange={(e) => setEditData(prev => ({ ...prev, category: e.target.value as RequestCategory }))}
                                     className="bg-white/10 border border-white/20 text-white text-sm rounded px-2 py-1 w-full"
                                 >
                                     <option value="other" className="text-black">其他</option>

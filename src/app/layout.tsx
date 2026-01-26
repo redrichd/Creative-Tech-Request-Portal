@@ -50,6 +50,7 @@ function AuthContent({ children }: { children: React.ReactNode }) {
 
   // ✨ 新增：確保組件只在瀏覽器端掛載後才運作
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 

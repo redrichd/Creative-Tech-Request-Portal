@@ -135,7 +135,7 @@ export async function updateRequestAdmin(
         // If adminNote is explicitly cleared, clear adminHandler too
         let adminHandler = data.adminHandler;
         if (data.adminNote !== undefined && !data.adminNote.trim()) {
-            adminHandler = deleteField() as any;
+            adminHandler = deleteField() as unknown as typeof data.adminHandler;
         }
 
         // Only update allowed fields, remove undefined

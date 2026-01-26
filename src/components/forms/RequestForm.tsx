@@ -6,6 +6,7 @@ import { createRequest } from "@/lib/services/requestService";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { User } from "firebase/auth";
+import { RequestCategory } from "@/lib/types";
 
 interface RequestFormProps {
     user: User;
@@ -34,7 +35,7 @@ export function RequestForm({ user, initialDepartment = "" }: RequestFormProps) 
         try {
             const ticketId = await createRequest({
                 ...formData,
-                category: formData.category as any, // Cast to avoid partial type mismatch if any
+                category: formData.category as RequestCategory, // Cast to avoid partial type mismatch
                 user: {
                     uid: user.uid,
                     displayName: user.displayName,
@@ -105,7 +106,7 @@ export function RequestForm({ user, initialDepartment = "" }: RequestFormProps) 
                         <select
                             name="category"
                             value={formData.category}
-                            onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as any }))}
+                            onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as RequestCategory }))}
                             className="w-full bg-white/5 border border-white/10 rounded-md px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-white/30"
                         >
                             <option value="other" className="text-black">其他</option>

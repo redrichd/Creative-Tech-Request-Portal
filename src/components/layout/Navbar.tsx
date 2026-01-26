@@ -22,7 +22,7 @@ export function Navbar() {
 
     if (!user) return null;
 
-    const isAdmin = (user as any).isAdmin;
+    const isAdmin = user.isAdmin;
 
     return (
         <nav className="fixed top-0 left-0 right-0 z-40 bg-black/20 backdrop-blur-md border-b border-white/5">
