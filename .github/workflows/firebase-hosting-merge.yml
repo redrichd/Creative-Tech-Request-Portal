@@ -1,0 +1,31 @@
+name: Deploy to Firebase Hosting on merge
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install and Build with Debug Check
+        run: |
+          # ✨ 第一步：偵測 GitHub Secret 是否有成功傳入
+          if [ -z "$NEXT_PUBLIC_FIREBASE_API_KEY" ]; then
+            echo "❌ 嚴重錯誤: GitHub Secret (NEXT_PUBLIC_FIREBASE_API_KEY) 沒有成功注入！"
+            echo "請檢查 GitHub Settings > Secrets > Actions 是否已設定該值。"
+            exit 1
+          fi
+          # ✨ 第二步：如果偵測成功，才開始編譯
+          npm ci && npm run build
+        env:
+          # ✨ 確保縮進正確，與上面的 run 對齊
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TOOL_DEVELOPMENT_REQUEST_8E135 }}
+          channelId: live
+          projectId: tool-development-request-8e135

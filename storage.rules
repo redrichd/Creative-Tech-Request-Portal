@@ -1,0 +1,25 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // 輔助函式: 檢查使用者是否已透過 Google 登入
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // 輔助函式: 從 Firestore 讀取身分, 判斷是否為管理員
+    function isAdmin() {
+      return isSignedIn() &&
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // 針對所有檔案的規則
+    match /{allPaths=**} {
+      // 只要有登入, 任何人都可以讀取檔案與上傳附件
+      allow read, create: if isSignedIn();
+      
+      // 只有管理員 (如: 您自己) 可以刪除或覆蓋檔案
+      allow update, delete: if isAdmin();
+    }
+  }
+}

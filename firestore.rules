@@ -1,0 +1,45 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 輔助函式: 判斷是否已登入
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // 輔助函式: 從 users 集合判斷是否為管理員
+    function isAdmin() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'super_admin'];
+    }
+
+    // 針對「需求申請單」的規則
+    match /requests/{requestId} {
+      // 只要登入, 任何人都可以讀取和建立申請單
+      allow read, create: if isSignedIn();
+      
+      // 只有管理員可以刪除
+      allow delete: if isAdmin();
+      
+      // 管理員或主管可以更新
+      allow update: if isAdmin() || (isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['supervisor', 'super_admin']);
+    }
+    
+    // 針對「用戶資料」的規則
+    match /users/{userId} {
+      // 用戶可以讀寫自己的資料, 或管理員可存取所有用戶資料
+      allow read, write: if request.auth.uid == userId || isAdmin();
+    }
+
+    // (Internal) Counters - 保留以維持功能
+    match /counters/{counterId} {
+      allow read, write: if isSignedIn();
+    }
+    
+    // (System) Config - 保留以維持功能
+    match /config/{configId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
