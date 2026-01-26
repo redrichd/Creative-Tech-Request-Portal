@@ -13,23 +13,30 @@ import { toast } from "sonner";
 export default function AdminPage() {
     const { user, loading } = useAuth();
     const [checking, setChecking] = useState(true);
+    const [mounted, setMounted] = useState(false); // ✨ 新增：確認組件已掛載
     const router = useRouter();
     const [logoUploading, setLogoUploading] = useState(false);
 
+    // ✨ 第一步：組件掛載後才標記 mounted
     useEffect(() => {
-        if (!loading) {
+        setMounted(true);
+    }, []);
+
+    // ✨ 第二步：權限檢查邏輯需等待 mounted 且 loading 結束
+    useEffect(() => {
+        if (mounted && !loading) {
             if (!user) {
                 router.push("/login");
             } else {
-                // Cast to custom type or dictionary to avoid implicit any errors if strict
-                const currentUser = user as unknown as { isAdmin?: boolean };
-                if (!currentUser.isAdmin) {
+                // 使用您之前定義好的 isAdmin 屬性
+                if (!user.isAdmin) {
                     router.push("/");
+                } else {
+                    setChecking(false);
                 }
-                setChecking(false);
             }
         }
-    }, [user, loading, router]);
+    }, [user, loading, router, mounted]);
 
     const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -47,7 +54,8 @@ export default function AdminPage() {
         }
     };
 
-    if (loading || checking) {
+    // ✨ 第三步：在 mounted 之前或檢查中，回傳 Loading UI
+    if (!mounted || loading || checking) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <Loader2 className="w-8 h-8 animate-spin text-white/50" />
@@ -87,7 +95,6 @@ export default function AdminPage() {
                             </div>
                         </Card>
 
-                        {/* Future Admin Features */}
                         <Card className="bg-white/5 border-white/10 p-6 opacity-50">
                             <h2 className="text-xl font-semibold text-white">使用者管理</h2>
                             <p className="text-sm text-white/60">即將推出。</p>
