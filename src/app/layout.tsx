@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from "@/lib/auth_context";
 import { Toaster } from "sonner";
 import { Navbar } from "@/components/layout/Navbar";
 import { PendingApproval } from "@/components/auth/PendingApproval";
+import { useEffect, useState } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,6 +46,17 @@ export default function RootLayout({
 
 function AuthContent({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
+  const [mounted, setMounted] = useState(false); // ✨ 新增：掛載狀態
+
+  // ✨ 新增：確保組件只在瀏覽器端掛載後才運作
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // ✨ 關鍵修正：如果還沒掛載（編譯中），回傳簡單的背景或 Loading，避開 useAuth 的判斷
+  if (!mounted) {
+    return <div className="min-h-screen bg-black" />;
+  }
 
   if (loading) {
     return (
@@ -67,4 +79,3 @@ function AuthContent({ children }: { children: React.ReactNode }) {
     </>
   );
 }
-
