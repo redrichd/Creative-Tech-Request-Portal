@@ -42,7 +42,7 @@ export default function DashboardPage() {
   const [selectedRequest, setSelectedRequest] = useState<ToolRequest | null>(null);
   const isAdmin = user?.isAdmin || false;
 
-  const dashboardData = useDashboardData(selectedStatuses, selectedCategories, search);
+  const dashboardData = useDashboardData(allRequests, selectedStatuses, selectedCategories, search);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
