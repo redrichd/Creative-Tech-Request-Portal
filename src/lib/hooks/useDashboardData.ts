@@ -52,11 +52,13 @@ export function useDashboardData(
             });
 
             // 2. Calculate Dashboard Summary
-            const totalRequests = filteredRequests.length;
+            // Exclude cancelled from total request counts
+            const activeRequests = filteredRequests.filter(r => r.status !== 'cancelled');
+            const totalRequests = activeRequests.length;
 
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            const todayNew = filteredRequests.filter(r => {
+            const todayNew = activeRequests.filter(r => {
                 const createdAt = getDateSafely(r.createdAt);
                 return createdAt && createdAt >= today;
             }).length;
@@ -80,7 +82,11 @@ export function useDashboardData(
             // 3. Department Distribution
             const deptMap: Record<string, number> = {};
             filteredRequests.forEach(r => {
-                const dept = r.department || '未分類';
+                let dept = (r.department || '未分類').trim();
+
+                // Normalization rules
+                if (dept === '人資部') dept = '人力資源部';
+
                 deptMap[dept] = (deptMap[dept] || 0) + 1;
             });
 

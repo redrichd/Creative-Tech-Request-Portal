@@ -30,6 +30,14 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
             border: "border-green-500/30",
         },
         {
+            title: "整體完成率",
+            value: summary.totalRequests > 0 ? Math.round((summary.completedTotal / summary.totalRequests) * 100) : 0,
+            icon: <CheckCircle2 className="w-5 h-5 text-emerald-400" />,
+            glow: "shadow-[0_0_15px_rgba(52,211,153,0.3)]",
+            border: "border-emerald-500/30",
+            suffix: "%"
+        },
+        {
             title: "平均開發天數",
             value: summary.avgDevDays,
             icon: <Clock className="w-5 h-5 text-blue-400" />,
@@ -40,7 +48,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
     ];
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             {cards.map((card, idx) => (
                 <div
                     key={idx}

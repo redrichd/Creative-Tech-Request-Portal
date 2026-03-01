@@ -30,6 +30,7 @@ export function DepartmentChart({ data, mostActiveDepartment }: DepartmentChartP
                                 outerRadius={90}
                                 paddingAngle={5}
                                 dataKey="count"
+                                nameKey="department"
                                 stroke="none"
                             >
                                 {data.map((entry, index) => (

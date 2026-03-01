@@ -7,7 +7,7 @@ interface StatusBadgeProps {
 }
 
 export const statusConfig: Record<RequestStatus, { label: string; color: string; bg: string }> = {
-    pending: { label: "待處理", color: "text-gray-200", bg: "bg-gray-500/20 border-gray-500/30" },
+    pending: { label: "待處理", color: "text-slate-300", bg: "bg-slate-400/20 border-slate-400/30" },
     discussing: { label: "討論中", color: "text-red-200", bg: "bg-red-500/20 border-red-500/30" },
     developing: { label: "開發中", color: "text-orange-200", bg: "bg-orange-500/20 border-orange-500/30" },
     done: { label: "已完成", color: "text-green-200", bg: "bg-green-500/20 border-green-500/30" },

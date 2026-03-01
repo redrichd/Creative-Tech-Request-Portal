@@ -17,6 +17,7 @@ import { ViewSwitcher, ViewMode } from "./(components)/ViewSwitcher";
 import { DashboardView } from "./(components)/DashboardView";
 import { CardListView } from "./(components)/CardListView";
 import { AnimatePresence, motion } from "framer-motion";
+import { useDashboardData } from "@/lib/hooks/useDashboardData";
 
 const STATUS_FILTERS: RequestStatus[] = ["pending", "discussing", "developing", "done", "cancelled"];
 
@@ -40,6 +41,8 @@ export default function DashboardPage() {
 
   const [selectedRequest, setSelectedRequest] = useState<ToolRequest | null>(null);
   const isAdmin = user?.isAdmin || false;
+
+  const dashboardData = useDashboardData(selectedStatuses, selectedCategories, search);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -177,6 +180,14 @@ export default function DashboardPage() {
               </Button>
               {STATUS_FILTERS.map(s => {
                 const isActive = selectedStatuses.includes(s);
+                const activeGlows: Record<string, string> = {
+                  pending: "bg-slate-500/30 border-slate-300 text-white shadow-[0_0_12px_rgba(203,213,225,0.4)]",
+                  discussing: "bg-red-500/30 border-red-500 text-white shadow-[0_0_12px_rgba(239,68,68,0.4)]",
+                  developing: "bg-orange-500/30 border-orange-500 text-white shadow-[0_0_12px_rgba(249,115,22,0.4)]",
+                  done: "bg-green-500/30 border-green-500 text-white shadow-[0_0_12px_rgba(34,197,94,0.4)]",
+                  cancelled: "bg-zinc-800/50 border-zinc-500 text-white shadow-[0_0_12px_rgba(113,113,122,0.4)]"
+                };
+
                 return (
                   <Button
                     key={s}
@@ -185,7 +196,7 @@ export default function DashboardPage() {
                     className={cn(
                       "text-xs h-9 capitalize rounded-full border transition-all duration-200",
                       isActive
-                        ? `bg-${statusConfig[s].color.replace('text-', '')}-500/20 border-${statusConfig[s].color.replace('text-', '')}-500 text-white shadow-[0_0_10px_rgba(255,255,255,0.2)]`
+                        ? activeGlows[s]
                         : "border-transparent text-white/60 hover:text-white hover:bg-white/5"
                     )}
                     style={isActive ? { borderColor: 'currentColor' } : {}}
@@ -198,16 +209,16 @@ export default function DashboardPage() {
           </div>
 
           {/* Main Content Area */}
-          <div className="relative overflow-hidden min-h-[600px]">
+          <div className="relative w-full min-h-[600px] grid grid-cols-1 grid-rows-1 overflow-x-hidden pt-2">
             <AnimatePresence mode="wait" initial={false}>
               {view === "list" ? (
                 <motion.div
                   key="list"
-                  initial={{ x: "-10%", opacity: 0 }}
+                  initial={{ x: "-5%", opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: "-10%", opacity: 0 }}
+                  exit={{ x: "-5%", opacity: 0 }}
                   transition={{ duration: 0.3, ease: "easeInOut" }}
-                  className="absolute inset-0"
+                  className="col-start-1 row-start-1 w-full"
                 >
                   <CardListView
                     requests={requests}
@@ -218,13 +229,13 @@ export default function DashboardPage() {
               ) : (
                 <motion.div
                   key="dashboard"
-                  initial={{ x: "10%", opacity: 0 }}
+                  initial={{ x: "5%", opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: "10%", opacity: 0 }}
+                  exit={{ x: "5%", opacity: 0 }}
                   transition={{ duration: 0.3, ease: "easeInOut" }}
-                  className="absolute inset-0"
+                  className="col-start-1 row-start-1 w-full"
                 >
-                  <DashboardView data={{ isLoading: false, summary: { totalRequests: 0, todayNew: 0, completedTotal: 0, avgDevDays: 0 }, departmentDistribution: [], categoryVsStatus: [], momentum: [], mostActiveDepartment: "", error: null }} />
+                  <DashboardView data={dashboardData} />
                 </motion.div>
               )}
             </AnimatePresence>
