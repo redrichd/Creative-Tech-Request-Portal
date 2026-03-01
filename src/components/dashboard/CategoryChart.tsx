@@ -19,13 +19,13 @@ export function CategoryChart({ data }: CategoryChartProps) {
                             margin={{ top: 20, right: 30, left: -20, bottom: 5 }}
                         >
                             <XAxis dataKey="category" stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} />
-                            <YAxis stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} />
+                            <YAxis stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} allowDecimals={false} />
                             <Tooltip
                                 cursor={{ fill: 'rgba(255,255,255,0.05)' }}
                                 contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff' }}
                             />
                             <Legend wrapperStyle={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)' }} />
-                            <Bar dataKey="black" stackId="a" fill="#1e293b" name="待辦" radius={[0, 0, 4, 4]} />
+                            <Bar dataKey="black" stackId="a" fill="#CBD5E1" name="待處理" radius={[0, 0, 4, 4]} />
                             <Bar dataKey="red" stackId="a" fill="#ef4444" name="討論中" />
                             <Bar dataKey="orange" stackId="a" fill="#f97316" name="開發中" />
                             <Bar dataKey="green" stackId="a" fill="#22c55e" name="已完成" />
