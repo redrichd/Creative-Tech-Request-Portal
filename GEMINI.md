@@ -1,6 +1,6 @@
 ﻿# Tool Development Request Form Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-01-16
+Auto-generated from all feature plans. Last updated: 2026-03-01
 
 ## Active Technologies
 
@@ -23,6 +23,7 @@ npm test; npm run lint
 React 18+ (Next.js 14+ recommended), TypeScript 5+: Follow standard conventions
 
 ## Recent Changes
+- 001-dashboard-view: Added recharts
 
 - 001-tool-dev-requests: Added React 18+ (Next.js 14+ recommended), TypeScript 5+ + Firebase SDK (v10+), Tailwind CSS (v3+), Framer Motion (for animations)
 

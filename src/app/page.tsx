@@ -13,6 +13,10 @@ import { Plus, Loader2 } from "lucide-react";
 import { RequestDetailModal } from "@/components/ui/RequestDetailModal";
 import { statusConfig } from "@/components/ui/StatusBadge";
 import { cn } from "@/lib/utils";
+import { ViewSwitcher, ViewMode } from "./(components)/ViewSwitcher";
+import { DashboardView } from "./(components)/DashboardView";
+import { CardListView } from "./(components)/CardListView";
+import { AnimatePresence, motion } from "framer-motion";
 
 const STATUS_FILTERS: RequestStatus[] = ["pending", "discussing", "developing", "done", "cancelled"];
 
@@ -28,6 +32,7 @@ export default function DashboardPage() {
   const [allRequests, setAllRequests] = useState<ToolRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [view, setView] = useState<ViewMode>("list");
 
   // Multi-select states
   const [selectedStatuses, setSelectedStatuses] = useState<RequestStatus[]>([]);
@@ -142,6 +147,8 @@ export default function DashboardPage() {
                 })}
               </div>
 
+              <ViewSwitcher view={view} onChange={setView} />
+
               <Link href="/request">
                 <Button className="w-full md:w-auto shadow-lg shadow-blue-500/20">
                   <Plus className="w-4 h-4 mr-2" /> 新增需求
@@ -190,12 +197,38 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* List */}
-          <RequestList
-            requests={requests}
-            loading={loading}
-            onSelect={setSelectedRequest}
-          />
+          {/* Main Content Area */}
+          <div className="relative overflow-hidden min-h-[600px]">
+            <AnimatePresence mode="wait" initial={false}>
+              {view === "list" ? (
+                <motion.div
+                  key="list"
+                  initial={{ x: "-10%", opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: "-10%", opacity: 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="absolute inset-0"
+                >
+                  <CardListView
+                    requests={requests}
+                    loading={loading}
+                    onSelect={setSelectedRequest}
+                  />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="dashboard"
+                  initial={{ x: "10%", opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: "10%", opacity: 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="absolute inset-0"
+                >
+                  <DashboardView data={{ isLoading: false, summary: { totalRequests: 0, todayNew: 0, completedTotal: 0, avgDevDays: 0 }, departmentDistribution: [], categoryVsStatus: [], momentum: [], mostActiveDepartment: "", error: null }} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
 
 
