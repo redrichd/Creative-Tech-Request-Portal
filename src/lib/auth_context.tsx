@@ -45,30 +45,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
                     let role: AppUser["role"] = "pending";
 
+                    const cleanName = currentUser.displayName ? currentUser.displayName.split(" ")[0] : null;
+
                     if (userSnap.exists()) {
                         role = (userSnap.data().role as AppUser["role"]) || "pending";
-                        
+
                         // 檢查名稱是否不同，若不同則更新 Firestore
                         const dbDisplayName = userSnap.data().displayName;
-                        if (currentUser.displayName && dbDisplayName !== currentUser.displayName) {
+                        if (cleanName && dbDisplayName !== cleanName) {
                             const { updateDoc } = await import("firebase/firestore");
                             await updateDoc(userRef, {
-                                displayName: currentUser.displayName,
+                                displayName: cleanName,
                                 // role 欄位不受影響
                             });
                         }
                     } else {
                         // Create initial user doc
                         await setDoc(userRef, {
-                            displayName: currentUser.displayName,
+                            displayName: cleanName,
                             email: currentUser.email,
                             role: "pending",
                             createdAt: new Date()
                         });
                     }
 
+                    // 覆寫 displayName 為乾淨的名稱，以便前端元件也顯示乾淨名稱
+                    const finalUser = Object.assign({}, currentUser, { displayName: cleanName || currentUser.displayName });
+
                     setUser({
-                        ...currentUser,
+                        ...finalUser,
                         role,
                         isPending: role === "pending",
                         isAdmin: role === "admin" || role === "super_admin"
