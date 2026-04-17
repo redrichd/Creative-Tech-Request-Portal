@@ -27,8 +27,16 @@ service cloud.firestore {
     
     // 針對「用戶資料」的規則
     match /users/{userId} {
-      // 用戶可以讀寫自己的資料, 或管理員可存取所有用戶資料
-      allow read, write: if request.auth.uid == userId || isAdmin();
+      allow read: if request.auth.uid == userId || isAdmin();
+      allow create: if request.auth.uid == userId && request.resource.data.role == 'pending';
+      allow update: if request.auth.uid == userId && request.resource.data.role == resource.data.role || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // 工具站開發需求：登入後檢視、管理員修改
+    match /cards/{cardId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
     }
 
     // (Internal) Counters - 保留以維持功能

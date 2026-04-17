@@ -47,6 +47,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
                     if (userSnap.exists()) {
                         role = (userSnap.data().role as AppUser["role"]) || "pending";
+                        
+                        // 檢查名稱是否不同，若不同則更新 Firestore
+                        const dbDisplayName = userSnap.data().displayName;
+                        if (currentUser.displayName && dbDisplayName !== currentUser.displayName) {
+                            const { updateDoc } = await import("firebase/firestore");
+                            await updateDoc(userRef, {
+                                displayName: currentUser.displayName,
+                                // role 欄位不受影響
+                            });
+                        }
                     } else {
                         // Create initial user doc
                         await setDoc(userRef, {
